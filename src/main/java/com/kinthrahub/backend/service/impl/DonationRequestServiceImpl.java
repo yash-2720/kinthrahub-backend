@@ -1,6 +1,7 @@
 package com.kinthrahub.backend.service.impl;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,12 +11,13 @@ import org.springframework.stereotype.Service;
 
 import com.kinthrahub.backend.dto.request.DonationRequestDTO;
 import com.kinthrahub.backend.dto.response.DonationRequestResponseDTO;
+import com.kinthrahub.backend.dto.response.DonationSummaryResponseDTO;
 import com.kinthrahub.backend.entity.ApplicationUser;
 import com.kinthrahub.backend.entity.DonationPlan;
 import com.kinthrahub.backend.entity.DonationRequest;
 import com.kinthrahub.backend.entity.Employee;
 import com.kinthrahub.backend.enums.DonationStatus;
-import com.kinthrahub.backend.enums.RoleType;
+import com.kinthrahub.backend.enums.DonationType;
 import com.kinthrahub.backend.exception.BusinessValidationException;
 import com.kinthrahub.backend.exception.ResourceNotFoundException;
 import com.kinthrahub.backend.mapper.DonationRequestMapper;
@@ -100,7 +102,6 @@ public class DonationRequestServiceImpl implements DonationRequestService {
 							"Donation Request Not found for Id : " + donationRequestId));
 
 		}
-		
 
 		return donationRequestMapper.toResponseDTO(donationRequest);
 	}
@@ -138,6 +139,35 @@ public class DonationRequestServiceImpl implements DonationRequestService {
 		Page<DonationRequest> donationRequests = donationRequestRepository.findAll(specification,
 				PageRequest.of(page, size));
 		return donationRequests.map(donationRequestMapper::toResponseDTO);
+	}
+
+	@Override
+	public DonationSummaryResponseDTO getDonationSummary() {
+
+		Employee employee = loggedInUserService.getCurrentEmployee();
+
+		LocalDate today = LocalDate.now();
+
+		LocalDate monthStart = today.withDayOfMonth(1);
+		LocalDate monthEnd = today.withDayOfMonth(today.lengthOfMonth());
+
+		BigDecimal currentDonationAmount = donationRequestRepository.getCurrentMonthDonationAmount(
+				employee.getEmployeeId(), monthStart, monthEnd, DonationStatus.INITIALIZED, DonationType.ONE_TIME,
+				DonationType.RECURRING);
+
+		BigDecimal basicSalary = employee.getBasicSalary();
+
+		BigDecimal minimumSalaryReserve = BigDecimal.valueOf(5000);
+
+		BigDecimal eligibleDonationAmount = basicSalary.subtract(minimumSalaryReserve).subtract(currentDonationAmount);
+
+		DonationSummaryResponseDTO response = new DonationSummaryResponseDTO();
+
+		response.setBasicSalary(basicSalary);
+		response.setCurrentDonationAmount(currentDonationAmount);
+		response.setEligibleDonationAmount(eligibleDonationAmount);
+
+		return response;
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 
 import com.kinthrahub.backend.dto.request.DonationRequestDTO;
 import com.kinthrahub.backend.dto.response.DonationRequestResponseDTO;
+import com.kinthrahub.backend.dto.response.DonationSummaryResponseDTO;
 
 public interface DonationRequestService {
 	
@@ -23,5 +24,7 @@ public interface DonationRequestService {
 	        int size);
 
 	DonationRequestResponseDTO cancelDonationRequest(String donationRequestId);
+	
+	DonationSummaryResponseDTO getDonationSummary();
 
 }

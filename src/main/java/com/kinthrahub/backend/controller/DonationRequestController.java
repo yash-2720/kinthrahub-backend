@@ -1,6 +1,7 @@
 package com.kinthrahub.backend.controller;
 
 import org.springframework.data.domain.Page;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kinthrahub.backend.dto.request.DonationRequestDTO;
 import com.kinthrahub.backend.dto.response.DonationRequestResponseDTO;
+import com.kinthrahub.backend.dto.response.DonationSummaryResponseDTO;
 import com.kinthrahub.backend.service.DonationRequestService;
 
 import jakarta.validation.Valid;
@@ -49,10 +51,16 @@ public class DonationRequestController {
 			@RequestParam(defaultValue = "5") int size) {
 		return donationRequestService.searchDonationRequests(search, isActive, page, size);
 	}
-	
+
 	@DeleteMapping("/cancelDonationRequest/{id}")
 	public DonationRequestResponseDTO cancelDonationRequest(@PathVariable String id) {
 		return donationRequestService.cancelDonationRequest(id);
+	}
+
+	@GetMapping("/getDonationSummary")
+	public DonationSummaryResponseDTO getDonationSummary() {
+
+		return donationRequestService.getDonationSummary();
 	}
 
 }
