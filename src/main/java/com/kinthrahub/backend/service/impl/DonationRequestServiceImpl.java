@@ -66,18 +66,50 @@ public class DonationRequestServiceImpl implements DonationRequestService {
 		donationRequest.setDonationPlan(donationPlan);
 
 		donationRequest.setDonationRequestId(sequenceGenerator.generateId("DOR"));
+//
+//		BigDecimal salary = employee.getBasicSalary();
+//		BigDecimal donationAmount = donationRequest.getDonationAmount();
+//		BigDecimal updatedAmount = salary.subtract(donationAmount);
+//		
+		
+		LocalDate today = LocalDate.now();
 
-		BigDecimal salary = employee.getBasicSalary();
+		LocalDate monthStart = today.withDayOfMonth(1);
+		LocalDate monthEnd = today.withDayOfMonth(today.lengthOfMonth());
+
+		BigDecimal currentDonationAmount = donationRequestRepository.getCurrentMonthDonationAmount(
+				employee.getEmployeeId(), monthStart, monthEnd, DonationStatus.INITIALIZED, DonationType.ONE_TIME,
+				DonationType.RECURRING);
+
+
+//		BigDecimal salary = employee.getBasicSalary();
+		
+		
+		
+		BigDecimal basicSalary = employee.getBasicSalary();
+		
 		BigDecimal donationAmount = donationRequest.getDonationAmount();
-		BigDecimal updatedAmount = salary.subtract(donationAmount);
+
+		BigDecimal minimumSalaryReserve = BigDecimal.valueOf(5000);
+
+		BigDecimal eligibleDonationAmount = basicSalary.subtract(minimumSalaryReserve).subtract(currentDonationAmount);
+//		BigDecimal updatedAmount = basicSalary.subtract(donationAmount).subtract(currentDonationAmount);
+		System.out.println("Elibigle Donation Amount : "+ eligibleDonationAmount)	;
+		System.out.println("Donation Amount : "+ donationAmount);
+		
+		
 		if (donationAmount.compareTo(BigDecimal.valueOf(500)) < 0) {
 			throw new BusinessValidationException("The minimum donation amount allowed is 500");
 		}
 
-		if (updatedAmount.compareTo(BigDecimal.valueOf(5000)) < 0) {
-			throw new BusinessValidationException(
-					"Insufficient remaining salary. Your account must retain at least 5,000 after donating.");
-
+//		if (updatedAmount.compareTo(BigDecimal.valueOf(5000)) < 0) {
+//			throw new BusinessValidationException(
+//					"Insufficient remaining salary. Your account must retain at least 5,000 after donating.");
+//
+//		}
+		
+		if(donationAmount.compareTo(eligibleDonationAmount) > 0) {
+			throw new BusinessValidationException("Insufficient remaining salary. Your account must retain atleast 5,000 after donating");
 		}
 		donationRequest.setDonationStatus(DonationStatus.INITIALIZED);
 		donationRequestRepository.save(donationRequest);
