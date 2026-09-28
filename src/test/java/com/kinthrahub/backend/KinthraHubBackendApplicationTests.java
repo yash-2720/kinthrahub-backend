@@ -1,10 +1,10 @@
-package com.carebridge.carebridge_backend;
+package com.kinthrahub.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CarebridgeBackendApplicationTests {
+class KinthraHubBackendApplicationTests {
 
 	@Test
 	void contextLoads() {
