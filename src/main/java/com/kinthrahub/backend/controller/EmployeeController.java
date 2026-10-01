@@ -71,9 +71,9 @@ public class EmployeeController {
 	@GetMapping("/search")
 	public Page<EmployeeResponseDTO> getEmployees(@RequestParam(required = false) String search,
 			@RequestParam(defaultValue = "true") boolean isActive, @RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "5") int size) {
+			@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue ="asc") String sortOrder) {
 
-		return employeeService.searchEmployee(search, isActive, page, size);
+		return employeeService.searchEmployee(search, isActive, page, size, sortOrder);
 	}
 
 }

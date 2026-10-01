@@ -20,7 +20,7 @@ public interface EmployeeService {
 	
 	public EmployeeResponseDTO updateEmployee(String id, UpdateEmployeeRequestDTO request);
 	
-	public Page<EmployeeResponseDTO> searchEmployee(String search, boolean isActive, int page, int size);
+	public Page<EmployeeResponseDTO> searchEmployee(String search, boolean isActive, int page, int size, String sortOrder);
 	
 	public CurrentEmployeeResponseDTO getCurrentEmployee();
 }

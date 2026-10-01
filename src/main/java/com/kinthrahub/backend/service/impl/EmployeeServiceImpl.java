@@ -136,10 +136,20 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Page<EmployeeResponseDTO> searchEmployee(String search, boolean isActive, int page, int size) {
+	public Page<EmployeeResponseDTO> searchEmployee(String search, boolean isActive, int page, int size, String sortOrder) {
 		Specification<Employee> specification = Specification.where(EmployeeSpecification.search(search))
 				.and(EmployeeSpecification.isActive(isActive));
-		Page<Employee> employees = employeeRepository.findAll(specification, PageRequest.of(page, size));
+		
+		Sort sort;
+		if ("desc".equalsIgnoreCase(sortOrder)) {
+			sort = Sort.by(Sort.Direction.DESC, "employeeName");
+		} else {
+			sort = Sort.by(Sort.Direction.ASC, "employeeName");
+		}
+		
+		Page<Employee> employees = employeeRepository.findAll(specification, PageRequest.of(page, size, sort));
+		
+		
 //		return employees.map(employeeMapper::toResponseDTO);
 		return mapEmployeesWithApplicationUserStatus(employees);
 	}
