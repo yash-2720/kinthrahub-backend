@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kinthrahub.backend.dto.request.DonationRequestDTO;
 import com.kinthrahub.backend.dto.response.DonationRequestResponseDTO;
 import com.kinthrahub.backend.dto.response.DonationSummaryResponseDTO;
+import com.kinthrahub.backend.enums.DonationStatus;
+import com.kinthrahub.backend.enums.DonationType;
 import com.kinthrahub.backend.service.DonationRequestService;
 
 import jakarta.validation.Valid;
@@ -41,15 +43,17 @@ public class DonationRequestController {
 	@GetMapping("/getAllDonationRequests")
 	public Page<DonationRequestResponseDTO> getAllDonationRequests(
 			@RequestParam(defaultValue = "true") boolean isActive, @RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "5") int size) {
-		return donationRequestService.getAllDonationRequests(isActive, page, size);
+			@RequestParam(defaultValue = "5") int size, @RequestParam(required = false) DonationStatus donationStatus,@RequestParam(required = false) DonationType donationType,
+			@RequestParam(defaultValue = "true")boolean myDonations) {
+		return donationRequestService.getAllDonationRequests(isActive, page, size,donationStatus,donationType,myDonations);
 	}
 
 	@GetMapping("/search")
 	public Page<DonationRequestResponseDTO> searchDonationRequests(@RequestParam(required = false) String search,
 			@RequestParam(defaultValue = "true") boolean isActive, @RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "5") int size) {
-		return donationRequestService.searchDonationRequests(search, isActive, page, size);
+			@RequestParam(defaultValue = "5") int size, @RequestParam(required = false) DonationStatus donationStatus,@RequestParam(required = false) DonationType donationType,
+			@RequestParam(defaultValue = "true")boolean myDonations) {
+		return donationRequestService.searchDonationRequests(search, isActive, page, size, donationStatus, donationType, myDonations);
 	}
 
 	@DeleteMapping("/cancelDonationRequest/{id}")

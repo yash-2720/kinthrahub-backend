@@ -4,6 +4,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.kinthrahub.backend.entity.DonationRequest;
 import com.kinthrahub.backend.entity.Employee;
+import com.kinthrahub.backend.enums.DonationStatus;
+import com.kinthrahub.backend.enums.DonationType;
 
 //private String donationRequestId;
 //
@@ -60,5 +62,15 @@ public class DonationRequestSpecification {
 	public static Specification<DonationRequest> employee(Employee employee) {
 
 		return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("employee"), employee);
+	}
+	
+	public static Specification<DonationRequest> donationStatus(DonationStatus donationStatus){
+		   return (root, query, criteriaBuilder) ->
+           criteriaBuilder.equal(root.get("donationStatus"), donationStatus);
+	}
+	
+	public static Specification<DonationRequest> donationType(DonationType donationType){
+		return (root,query,criteriaBuilder)->
+		criteriaBuilder.equal(root.get("donationType"),donationType);
 	}
 }

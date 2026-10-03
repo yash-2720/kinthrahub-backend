@@ -71,7 +71,7 @@ public class DonationRequestServiceImpl implements DonationRequestService {
 //		BigDecimal donationAmount = donationRequest.getDonationAmount();
 //		BigDecimal updatedAmount = salary.subtract(donationAmount);
 //		
-		
+
 		LocalDate today = LocalDate.now();
 
 		LocalDate monthStart = today.withDayOfMonth(1);
@@ -81,23 +81,19 @@ public class DonationRequestServiceImpl implements DonationRequestService {
 				employee.getEmployeeId(), monthStart, monthEnd, DonationStatus.INITIALIZED, DonationType.ONE_TIME,
 				DonationType.RECURRING);
 
-
 //		BigDecimal salary = employee.getBasicSalary();
-		
-		
-		
+
 		BigDecimal basicSalary = employee.getBasicSalary();
-		
+
 		BigDecimal donationAmount = donationRequest.getDonationAmount();
 
 		BigDecimal minimumSalaryReserve = BigDecimal.valueOf(5000);
 
 		BigDecimal eligibleDonationAmount = basicSalary.subtract(minimumSalaryReserve).subtract(currentDonationAmount);
 //		BigDecimal updatedAmount = basicSalary.subtract(donationAmount).subtract(currentDonationAmount);
-		System.out.println("Elibigle Donation Amount : "+ eligibleDonationAmount)	;
-		System.out.println("Donation Amount : "+ donationAmount);
-		
-		
+		System.out.println("Elibigle Donation Amount : " + eligibleDonationAmount);
+		System.out.println("Donation Amount : " + donationAmount);
+
 		if (donationAmount.compareTo(BigDecimal.valueOf(500)) < 0) {
 			throw new BusinessValidationException("The minimum donation amount allowed is 500");
 		}
@@ -107,9 +103,10 @@ public class DonationRequestServiceImpl implements DonationRequestService {
 //					"Insufficient remaining salary. Your account must retain at least 5,000 after donating.");
 //
 //		}
-		
-		if(donationAmount.compareTo(eligibleDonationAmount) > 0) {
-			throw new BusinessValidationException("Insufficient remaining salary. Your account must retain atleast 5,000 after donating");
+
+		if (donationAmount.compareTo(eligibleDonationAmount) > 0) {
+			throw new BusinessValidationException(
+					"Insufficient remaining salary. Your account must retain atleast 5,000 after donating");
 		}
 		donationRequest.setDonationStatus(DonationStatus.INITIALIZED);
 		donationRequestRepository.save(donationRequest);
@@ -139,12 +136,25 @@ public class DonationRequestServiceImpl implements DonationRequestService {
 	}
 
 	@Override
-	public Page<DonationRequestResponseDTO> getAllDonationRequests(boolean isActive, int page, int size) {
+	public Page<DonationRequestResponseDTO> getAllDonationRequests(boolean isActive, int page, int size,
+			DonationStatus donationStatus, DonationType donationType, boolean myDonations) {
 		Specification<DonationRequest> specification = Specification
 				.where(DonationRequestSpecification.isActive(isActive));
 
-		if (!loggedInUserService.isAdmin()) {
+		  if (donationStatus != null) {
+			specification = specification.and(DonationRequestSpecification.donationStatus(donationStatus));
+		}
 
+		if (donationType != null) {
+			specification = specification.and(DonationRequestSpecification.donationType(donationType));
+		}
+
+		/*
+		 * Non-admin users can only see their own donations. Admin users can choose
+		 * between: myDonations = true -> their own donations myDonations = false -> all
+		 * donations
+		 */
+		if (!loggedInUserService.isAdmin() || myDonations) {
 			specification = specification
 					.and(DonationRequestSpecification.employee(loggedInUserService.getCurrentEmployee()));
 		}
@@ -155,22 +165,54 @@ public class DonationRequestServiceImpl implements DonationRequestService {
 		return donationRequests.map(donationRequestMapper::toResponseDTO);
 	}
 
+
 	@Override
-	public Page<DonationRequestResponseDTO> searchDonationRequests(String search, boolean isActive, int page,
-			int size) {
+	public Page<DonationRequestResponseDTO> searchDonationRequests(
+	        String search,
+	        boolean isActive,
+	        int page,
+	        int size,
+	        DonationStatus donationStatus,
+	        DonationType donationType,
+	        boolean myDonations) {
 
-		Specification<DonationRequest> specification = Specification.where(DonationRequestSpecification.search(search))
-				.and(DonationRequestSpecification.isActive(isActive));
+	    Specification<DonationRequest> specification =
+	            Specification.where(
+	                    DonationRequestSpecification.isActive(isActive));
 
-		if (!loggedInUserService.isAdmin()) {
+	    if (search != null && !search.isBlank()) {
+	        specification = specification.and(
+	                DonationRequestSpecification.search(search));
+	    }
 
-			specification = specification
-					.and(DonationRequestSpecification.employee(loggedInUserService.getCurrentEmployee()));
-		}
+	    if (donationStatus != null) {
+	        specification = specification.and(
+	                DonationRequestSpecification.donationStatus(donationStatus));
+	    }
 
-		Page<DonationRequest> donationRequests = donationRequestRepository.findAll(specification,
-				PageRequest.of(page, size));
-		return donationRequests.map(donationRequestMapper::toResponseDTO);
+	    if (donationType != null) {
+	        specification = specification.and(
+	                DonationRequestSpecification.donationType(donationType));
+	    }
+
+	    /*
+	     * Non-admin users can only see their own donations.
+	     * Admin users can choose between:
+	     *   myDonations = true  -> their own donations
+	     *   myDonations = false -> all donations
+	     */
+	    if (!loggedInUserService.isAdmin() || myDonations) {
+	        specification = specification.and(
+	                DonationRequestSpecification.employee(
+	                        loggedInUserService.getCurrentEmployee()));
+	    }
+
+	    Page<DonationRequest> donationRequests =
+	            donationRequestRepository.findAll(
+	                    specification,
+	                    PageRequest.of(page, size));
+
+	    return donationRequests.map(donationRequestMapper::toResponseDTO);
 	}
 
 	@Override
