@@ -1,6 +1,7 @@
 package com.kinthrahub.backend.exception;
 
 import java.time.LocalDateTime;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.security.authentication.BadCredentialsException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -116,6 +119,20 @@ public class GlobalExceptionHandler {
 		ErrorResponse errorResponse = createErrorResponse(HttpStatus.BAD_REQUEST, message, request);
 
 		return ResponseEntity.badRequest().body(errorResponse);
+	}
+	
+	@ExceptionHandler(BadCredentialsException.class)
+	public ResponseEntity<ErrorResponse> handleBadCredentialsException(
+	        BadCredentialsException exception,
+	        HttpServletRequest request) {
+
+	    ErrorResponse errorResponse = createErrorResponse(
+	            HttpStatus.UNAUTHORIZED,
+	            "Invalid username or password.",
+	            request
+	    );
+
+	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
 	}
 
 }

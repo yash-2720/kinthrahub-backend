@@ -1,0 +1,55 @@
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: kinthrahub-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: kinthrahub
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+    ports:
+      - "3307:3306"
+    volumes:
+      - kinthrahub-mysql-data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: kinthrahub-backend:1.1
+    container_name: kinthrahub-backend
+    restart: unless-stopped
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/kinthrahub
+      DB_USERNAME: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      JWT_EXPIRATION: "7600000"
+    ports:
+      - "8081:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+   
+  frontend:
+    build:
+      context: ../kinthrahub-frontend
+      dockerfile: Dockerfile
+    image: kinthrahub-frontend:1.2
+    container_name: kinthrahub-frontend
+    restart: unless-stopped
+    ports:
+      - "4300:80"
+    depends_on:
+      - backend
+
+
+volumes:
+  kinthrahub-mysql-data:
