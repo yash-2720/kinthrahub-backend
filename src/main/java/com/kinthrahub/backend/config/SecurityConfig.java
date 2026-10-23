@@ -40,7 +40,7 @@ public class SecurityConfig {
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint)
 						.accessDeniedHandler(customAccessDeniedHandler))
 				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/authentication/login")
+						auth -> auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/authentication/**","/actuator/health")
 								.permitAll().anyRequest().authenticated())
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -1,5 +1,7 @@
 package com.kinthrahub.backend.authentication;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,4 +26,12 @@ public class AuthenticationController {
 	public LoginResponseDTO login(@RequestBody @Valid LoginRequestDTO request) {
 		return authenticationService.login(request);
 	}
+	
+//	password encoder for testing purpose
+	
+//	@GetMapping("/encode")
+//	public String password() {
+//		String str  = new BCryptPasswordEncoder().encode("");
+//		return str;
+//	}
 }
