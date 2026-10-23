@@ -12,6 +12,11 @@ RUN mvn -B clean package -DskipTests
 # Stage 2: Run the application
 FROM eclipse-temurin:17-jre
 
+# Install curl for Docker health checks
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY --from=build /app/target/kinthrahub-backend-0.0.1-SNAPSHOT.jar app.jar
