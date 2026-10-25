@@ -8,7 +8,7 @@ services:
       MYSQL_DATABASE: kinthrahub
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
     ports:
-      - "3307:3306"
+      - "3308:3306"
     volumes:
       - kinthrahub-mysql-data:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
