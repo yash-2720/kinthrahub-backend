@@ -51,7 +51,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `id_sequence` WRITE;
 /*!40000 ALTER TABLE `id_sequence` DISABLE KEYS */;
-INSERT INTO `id_sequence` VALUES ('IDS00000001','Employee','EMP',1,18,1,'SYSTEM','2026-06-29 06:27:28','SYSTEM','2026-09-02 13:58:24'),('IDS00000002','Hospital','HOP',1,5,1,'SYSTEM','2026-06-29 06:27:28','SYSTEM','2026-06-29 06:40:28'),('IDS00000003','Donation Plan','DOP',1,10,1,'SYSTEM','2026-06-29 06:27:28','SYSTEM','2026-06-29 06:52:18'),('IDS00000004','Donation Request','DOR',1,50,1,'SYSTEM','2026-06-29 06:27:28','SYSTEM','2026-10-20 02:06:09'),('IDS00000005','Donation Transaction','DTR',1,57,1,'SYSTEM','2026-06-29 06:27:28','SYSTEM','2026-09-14 10:49:06'),('IDS00000006','Role','ROL',1,3,1,'SYSTEM','2026-06-29 06:27:28','SYSTEM','2026-06-29 06:27:28'),('IDS00000007','Application User','USR',1,11,1,'SYSTEM','2026-06-29 06:27:28','SYSTEM','2026-09-02 13:58:53'),('IDS00000008','Payroll Run','PRL',1,20,1,'SYSTEM','2026-07-07 12:45:16','SYSTEM','2026-09-14 10:49:06');
+INSERT INTO `id_sequence` VALUES ('IDS00000001','Employee','EMP',1,19,1,'SYSTEM','2026-06-29 06:27:28','SYSTEM','2026-09-02 13:58:24'),('IDS00000002','Hospital','HOP',1,5,1,'SYSTEM','2026-06-29 06:27:28','SYSTEM','2026-06-29 06:40:28'),('IDS00000003','Donation Plan','DOP',1,10,1,'SYSTEM','2026-06-29 06:27:28','SYSTEM','2026-06-29 06:52:18'),('IDS00000004','Donation Request','DOR',1,50,1,'SYSTEM','2026-06-29 06:27:28','SYSTEM','2026-10-20 02:06:09'),('IDS00000005','Donation Transaction','DTR',1,57,1,'SYSTEM','2026-06-29 06:27:28','SYSTEM','2026-09-14 10:49:06'),('IDS00000006','Role','ROL',1,3,1,'SYSTEM','2026-06-29 06:27:28','SYSTEM','2026-06-29 06:27:28'),('IDS00000007','Application User','USR',1,12,1,'SYSTEM','2026-06-29 06:27:28','SYSTEM','2026-09-02 13:58:53'),('IDS00000008','Payroll Run','PRL',1,20,1,'SYSTEM','2026-07-07 12:45:16','SYSTEM','2026-09-14 10:49:06');
 /*!40000 ALTER TABLE `id_sequence` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -73,5 +73,68 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- =============================================
+-- Seed Admin Employee
+-- =============================================
+
+INSERT INTO employee_table (
+    employee_id,
+    employee_number,
+    employee_name,
+    employee_email,
+    employee_phone_number,
+    basic_salary,
+    is_active,
+    created_by,
+    created_on,
+    modified_by,
+    modified_on
+)
+VALUES (
+    'EMP00000019',
+    'CBG100012',
+    'ADMIN',
+    'admin@gmail.com',
+    '9999999898',
+    1000000.00,
+    TRUE,
+    'SYSTEM',
+    NOW(),
+    'SYSTEM',
+    NOW()
+);
+
+-- =============================================
+-- Seed Admin Application User
+-- =============================================
+
+INSERT INTO application_user_table (
+    user_id,
+    employee_id,
+    role_id,
+    username,
+    password,
+    last_login,
+    is_active,
+    created_by,
+    created_on,
+    modified_by,
+    modified_on
+)
+VALUES (
+    'USR00000013',
+    'EMP00000019',
+    'ROL00000001',
+    'admin01',
+    '$2a$10$WwWUW/eO.yH229Bor5hl4.0fwyDep6jaVF4LmIGFFahYVxfdkvpv6',
+    NULL,
+    TRUE,
+    'SYSTEM',
+    NOW(),
+    'SYSTEM',
+    NOW()
+);
+
 
 -- Dump completed on 2026-10-20 14:02:36
